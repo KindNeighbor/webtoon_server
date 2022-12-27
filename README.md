@@ -1,1 +1,1 @@
-# toy-project-webtoon-server
+# toy_project_webtoon_server
