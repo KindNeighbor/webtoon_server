@@ -1,6 +1,6 @@
 package com.example.webtoon.security;
 
-import com.example.webtoon.model.User;
+import com.example.webtoon.entity.User;
 import com.example.webtoon.repository.UserRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;

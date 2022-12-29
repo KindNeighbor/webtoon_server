@@ -1,4 +1,4 @@
-package com.example.webtoon.model;
+package com.example.webtoon.entity;
 
 public enum Role {
     ROLE_USER,

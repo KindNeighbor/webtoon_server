@@ -1,6 +1,6 @@
 package com.example.webtoon.security;
 
-import com.example.webtoon.model.User;
+import com.example.webtoon.entity.User;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 public class SecurityUser extends org.springframework.security.core.userdetails.User {
