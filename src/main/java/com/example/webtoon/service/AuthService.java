@@ -10,7 +10,6 @@ import com.example.webtoon.repository.UserRepository;
 import com.example.webtoon.security.TokenProvider;
 import com.example.webtoon.security.TokenResponse;
 import java.util.Optional;
-import javax.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,13 +28,13 @@ public class AuthService {
         Optional<User> optionalUser = userRepository.findByEmail(parameter.getEmail());
 
         if (!optionalUser.isPresent()) {
-            return ResponseEntity.ok(new ApiResponse().res(StatusCode.INTERNAL_SERVER_ERROR,
-                ResponseMessage.LOGIN_FAIL_NO_EXIST_EMAIL));
+            return ResponseEntity.ok(new ApiResponse().res(StatusCode.BAD_REQUEST,
+                ResponseMessage.LOGIN_FAIL_NO_EMAIL_EXIST));
         }
 
         User user = optionalUser.get();
         if (!passwordEncoder.matches(parameter.getPassword(), user.getPassword())) {
-            return ResponseEntity.ok(new ApiResponse().res(StatusCode.INTERNAL_SERVER_ERROR,
+            return ResponseEntity.ok(new ApiResponse().res(StatusCode.BAD_REQUEST,
                 ResponseMessage.LOGIN_FAIL_PASSWORD_WRONG));
         }
 
@@ -49,10 +48,16 @@ public class AuthService {
 
     public ResponseEntity<?> signUp(UserInput parameter) {
 
-        Optional<User> optionalUser = userRepository.findByEmail(parameter.getEmail());
-        if (optionalUser.isPresent()) {
+        Optional<User> checkEmail = userRepository.findByEmail(parameter.getEmail());
+        if (checkEmail.isPresent()) {
             return ResponseEntity.ok(new ApiResponse().res(StatusCode.INTERNAL_SERVER_ERROR,
-                ResponseMessage.EXISTED_EMAIL));
+                ResponseMessage.ALREADY_EXISTED_EMAIL));
+        }
+
+        Optional<User> checkNickName = userRepository.findByNickname(parameter.getNickname());
+        if (checkNickName.isPresent()) {
+            return ResponseEntity.ok(new ApiResponse().res(StatusCode.INTERNAL_SERVER_ERROR,
+                ResponseMessage.ALREADY_EXISTED_NICKNAME));
         }
 
         User user = User.builder()
