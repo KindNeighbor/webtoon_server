@@ -23,8 +23,12 @@ public class UserService {
 
     @Transactional
     public User signup(UserDto userDto) {
-        if (userRepository.findOneWithAuthoritiesByUsername(userDto.getUsername()).orElse(null) != null) {
+        if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다.");
+        }
+
+        if (userRepository.findOneWithAuthoritiesByNickname(userDto.getNickname()).orElse(null) != null) {
+            throw new RuntimeException("중복되는 닉네임입니다.");
         }
 
         Authority authority = Authority.builder()
@@ -32,6 +36,7 @@ public class UserService {
             .build();
 
         User user = User.builder()
+            .email(userDto.getEmail())
             .username(userDto.getUsername())
             .password(passwordEncoder.encode(userDto.getPassword()))
             .nickname(userDto.getNickname())
@@ -43,12 +48,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthorities(String username) {
-        return userRepository.findOneWithAuthoritiesByUsername(username);
+    public Optional<User> getUserWithAuthorities(String nickname) {
+        return userRepository.findOneWithAuthoritiesByNickname(nickname);
     }
 
     @Transactional(readOnly = true)
     public Optional<User> getMyUserWithAuthorities() {
-        return SecurityUtil.getCurrentUsername().flatMap(userRepository::findOneWithAuthoritiesByUsername);
+        return SecurityUtil.getCurrentNickname().flatMap(userRepository::findOneWithAuthoritiesByNickname);
     }
 }
