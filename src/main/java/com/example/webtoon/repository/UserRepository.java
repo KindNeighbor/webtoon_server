@@ -2,14 +2,19 @@ package com.example.webtoon.repository;
 
 import com.example.webtoon.entity.User;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @EntityGraph(attributePaths = "authorities")
-    Optional<User> findOneWithAuthoritiesByEmail(String email);
+    Optional<User> findByEmail(String email);
 
-    @EntityGraph(attributePaths = "authorities")
-    Optional<User> findOneWithAuthoritiesByNickname(String nickname);
+//    Optional<User> findByUsernameOrEmail(String username, String email);
+
+    Optional<User> findByNickname(String nickname);
+
+    Boolean existsByUsername(String username);
+
+    Boolean existsByEmail(String email);
 }

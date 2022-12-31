@@ -1,17 +1,17 @@
-package com.example.webtoon.model;
+package com.example.webtoon.payload;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenDto {
+public class UserProfile {
 
-    private String token;
+    private String email;
+    private String username;
+    private String nickname;
 }

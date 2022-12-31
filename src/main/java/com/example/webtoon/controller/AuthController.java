@@ -1,17 +1,27 @@
 package com.example.webtoon.controller;
 
-import com.example.webtoon.model.LoginDto;
-import com.example.webtoon.model.TokenDto;
-import com.example.webtoon.security.JwtFilter;
-import com.example.webtoon.security.TokenProvider;
+
+import com.example.webtoon.common.ApiResponse;
+import com.example.webtoon.common.ResponseMessage;
+import com.example.webtoon.common.StatusCode;
+import com.example.webtoon.entity.Role;
+import com.example.webtoon.entity.RoleName;
+import com.example.webtoon.entity.User;
+import com.example.webtoon.payload.JwtAuthenticationResponse;
+import com.example.webtoon.payload.LoginRequest;
+import com.example.webtoon.payload.SignUpRequest;
+import com.example.webtoon.repository.RoleRepository;
+import com.example.webtoon.repository.UserRepository;
+import com.example.webtoon.security.JwtTokenProvider;
+import java.util.Collections;
 import javax.validation.Valid;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,29 +29,62 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class AuthController {
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public AuthController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
-        this.tokenProvider = tokenProvider;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-    }
+    private final AuthenticationManager authenticationManager;
+
+    private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/signin")
-    public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()
+                )
+        );
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = tokenProvider.createToken(authentication);
+        String jwt = tokenProvider.generateToken(authentication);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+    }
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+        if(userRepository.existsByUsername(signUpRequest.getUsername())) {
+            return ResponseEntity.ok(new ApiResponse(StatusCode.BAD_REQUEST, ResponseMessage.ALREADY_EXISTED_NICKNAME));
+        }
 
-        return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity.ok(new ApiResponse(StatusCode.BAD_REQUEST, ResponseMessage.ALREADY_EXISTED_EMAIL));
+        }
+
+        // Creating user's account
+        User user = new User(signUpRequest.getEmail(), signUpRequest.getUsername(),
+                signUpRequest.getPassword(), signUpRequest.getNickname());
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException());
+
+        user.setRoles(Collections.singleton(userRole));
+
+        User result = userRepository.save(user);
+
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentContextPath().path("/api/users/{username}")
+//                .buildAndExpand(result.getUsername()).toUri();
+
+        return ResponseEntity.ok(new ApiResponse(StatusCode.OK, ResponseMessage.CREATED_USER, result));
     }
 }

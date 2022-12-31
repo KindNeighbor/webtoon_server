@@ -1,11 +1,14 @@
 package com.example.webtoon.config;
 
-import com.example.webtoon.security.JwtAccessDeniedHandler;
+import com.example.webtoon.security.CustomUserDetailsService;
 import com.example.webtoon.security.JwtAuthenticationEntryPoint;
-import com.example.webtoon.security.JwtFilter;
-import com.example.webtoon.security.TokenProvider;
+import com.example.webtoon.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,13 +18,37 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@RequiredArgsConstructor
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final TokenProvider tokenProvider;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+@RequiredArgsConstructor
+@EnableGlobalMethodSecurity(
+    securedEnabled = true,
+    prePostEnabled = true
+)
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
+    
+
+    private final CustomUserDetailsService customUserDetailService;
+
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+
+    @Bean
+    public JwtAuthenticationFilter JwtAuthenticationFilter(){
+        return new JwtAuthenticationFilter();
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception{
+        authenticationManagerBuilder
+            .userDetailsService(customUserDetailService)
+            .passwordEncoder(passwordEncoder());
+    }
+
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -29,29 +56,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-            // token을 사용하는 방식이기 때문에 csrf를 disable합니다.
-            .csrf().disable()
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .cors() //Cross Origin Resource Sharing
+                    .and()
+                .csrf()
+                    .disable() //rest api이므로 csrf 보안이 필요 없으므로 disable 처리
+                .exceptionHandling() //예외처리
+                    .authenticationEntryPoint(unauthorizedHandler) //전달 예외 잡기
+                    .and()
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증하므로 세션은 필요없으므로 생성안함
+                    .and()
+                .authorizeRequests() //다음 리퀘스트에 대한 사용권한 체크
+                    .antMatchers("/api/signin", "/api/signup")
+                        .permitAll()
+                    .anyRequest()
+                        .authenticated(); //그 외 나머지 요청은 모두 인증된 회원만 접근가능
 
-            .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
-            .exceptionHandling()
-            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            .accessDeniedHandler(jwtAccessDeniedHandler)
+        // Add our custom JWT security filter
+        http.addFilterBefore(JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-            // 세션을 사용하지 않기 때문에 STATELESS로 설정
-            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-            .and()
-            .authorizeRequests()
-            .antMatchers("/api/hello").permitAll()
-            .antMatchers("/api/signin").permitAll()
-            .antMatchers("/api/signup").permitAll()
-            .anyRequest().authenticated()
-
-            .and()
-            .apply(new JwtSecurityConfig(tokenProvider));
     }
 }

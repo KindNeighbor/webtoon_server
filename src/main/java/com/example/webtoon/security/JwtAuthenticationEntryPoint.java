@@ -1,20 +1,25 @@
 package com.example.webtoon.security;
 
 import java.io.IOException;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+//AuthenticationEntryPoint는 commence()-미인증 사용자 접근 시 예외 처리 제공
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
     @Override
-    public void commence(HttpServletRequest request,
-        HttpServletResponse response,
-        AuthenticationException authException) throws IOException {
-        // 유효한 자격증명을 제공하지 않고 접근하려 할때 401
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    public void commence(HttpServletRequest httpServletRequest,
+                         HttpServletResponse httpServletResponse,
+                         AuthenticationException e) throws IOException, ServletException {
+        logger.error("Responding with unauthorized error. Message - {}", e.getMessage());
+        httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }
 }

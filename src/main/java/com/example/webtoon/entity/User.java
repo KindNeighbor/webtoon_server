@@ -1,11 +1,10 @@
 package com.example.webtoon.entity;
 
-
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,45 +12,49 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import javax.validation.constraints.Size;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+@Table(name = "users")
 @Entity
-@Table(name = "user")
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class User {
 
     @Id
-    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(name = "email", length = 50, unique = true)
+    @Size(max = 50)
+    @Column(length = 50, unique = true)
     private String email;
 
-    @Column(name = "username", length = 50)
+    @Size(max = 20)
     private String username;
 
-    @Column(name = "password", length = 100)
+    @Size(max = 100)
     private String password;
 
-    @Column(name = "nickname", length = 50, unique = true)
+    @Size(max = 20)
+    @Column(length = 50, unique = true)
     private String nickname;
 
-    @Column(name = "activated")
-    private boolean activated;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_authority",
-        joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
-        inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
+    public User() {
+
+    }
+
+    public User(String email, String username, String password, String nickname) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+    }
 }

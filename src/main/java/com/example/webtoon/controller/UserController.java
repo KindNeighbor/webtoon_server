@@ -1,46 +1,42 @@
 package com.example.webtoon.controller;
 
+
 import com.example.webtoon.entity.User;
-import com.example.webtoon.model.UserDto;
-import com.example.webtoon.service.UserService;
-import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import org.springframework.http.ResponseEntity;
+import com.example.webtoon.payload.UserProfile;
+import com.example.webtoon.repository.UserRepository;
+import com.example.webtoon.security.CurrentUser;
+import com.example.webtoon.security.UserPrincipal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class UserController {
-    private final UserService userService;
+@RequiredArgsConstructor
+public class UserController{
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    private final UserRepository userRepository;
+
+    @GetMapping("/user/me")
+    public UserProfile getCurrentUser(@CurrentUser UserPrincipal currentUser) {
+        System.out.println("currentUser = " + currentUser.getEmail());
+        System.out.println("currentUser.getUsername() = " + currentUser.getUsername());
+        UserProfile userProfile = new UserProfile(currentUser.getEmail(), currentUser.getUsername(), currentUser.getNickname());
+        return userProfile;
     }
-
-    @PostMapping("/signup")
-    public ResponseEntity<User> signup(
-        @Valid @RequestBody UserDto userDto
-    ) {
-        return ResponseEntity.ok(userService.signup(userDto));
-    }
-
-    @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<User> getMyUserInfo(HttpServletRequest request) {
-        return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
-    }
-
-    @GetMapping("/user/{username}")
+    
+    @GetMapping("/users/{nickname}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<User> getUserInfo(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUserWithAuthorities(username).get());
+    public UserProfile getUserProfile(@PathVariable(value = "nickname") String nickname) {
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new RuntimeException());
+
+
+        UserProfile userProfile = new UserProfile(user.getEmail(), user.getUsername(), user.getNickname());
+
+        return userProfile;
     }
 }
