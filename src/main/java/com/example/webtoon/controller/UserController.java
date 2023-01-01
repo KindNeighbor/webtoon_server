@@ -20,22 +20,28 @@ public class UserController{
 
     private final UserRepository userRepository;
 
+
+    // 자기 자신 조회
     @GetMapping("/user/me")
     public UserProfile getCurrentUser(@CurrentUser UserPrincipal currentUser) {
-        System.out.println("currentUser = " + currentUser.getEmail());
-        System.out.println("currentUser.getUsername() = " + currentUser.getUsername());
-        UserProfile userProfile = new UserProfile(currentUser.getEmail(), currentUser.getUsername(), currentUser.getNickname());
+        UserProfile userProfile =
+            new UserProfile(currentUser.getEmail(),
+                            currentUser.getUsername(),
+                            currentUser.getNickname());
         return userProfile;
     }
-    
-    @GetMapping("/users/{nickname}")
+
+    // 회원조회(관리자)
+    @GetMapping("/user/{nickname}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public UserProfile getUserProfile(@PathVariable(value = "nickname") String nickname) {
         User user = userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new RuntimeException());
 
-
-        UserProfile userProfile = new UserProfile(user.getEmail(), user.getUsername(), user.getNickname());
+        UserProfile userProfile =
+            new UserProfile(user.getEmail(),
+                user.getUsername(),
+                user.getNickname());
 
         return userProfile;
     }

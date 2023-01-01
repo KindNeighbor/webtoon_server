@@ -19,7 +19,7 @@ public class JwtTokenProvider { //Jwt 토큰 생성 및 유효성 검증 컴포�
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-    @Value("${jwt.secret}") //app properties에 정의돼있음
+    @Value("${jwt.secret}") // yml 에 저장
     private String jwtSecret;
 
     @Value("${jwt.token-validity-in-seconds}") //유효기간

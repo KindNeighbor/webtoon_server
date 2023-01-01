@@ -29,7 +29,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     
 
     private final CustomUserDetailsService customUserDetailService;
-
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
 
     @Bean
