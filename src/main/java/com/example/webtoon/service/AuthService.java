@@ -2,10 +2,10 @@ package com.example.webtoon.service;
 
 import com.example.webtoon.exception.CustomException;
 import com.example.webtoon.type.ErrorCode;
-import com.example.webtoon.entity.RoleName;
+import com.example.webtoon.type.RoleName;
 import com.example.webtoon.entity.User;
-import com.example.webtoon.payload.LoginRequest;
-import com.example.webtoon.payload.SignUpRequest;
+import com.example.webtoon.dto.LoginRequest;
+import com.example.webtoon.dto.SignUpRequest;
 import com.example.webtoon.repository.UserRepository;
 import com.example.webtoon.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class AuthService {
         // 이메일 일치 여부
         User user = userRepository.findByEmail(loginRequest.getEmail())
             .orElseThrow(() -> new CustomException(
-                HttpStatus.BAD_REQUEST, ErrorCode.LOGIN_FAIL_NO_EMAIL_EXIST));
+                HttpStatus.BAD_REQUEST, ErrorCode.LOGIN_FAIL_EMAIL_NOT_EXIST));
 
         // 비밀번호 일치 여부
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {

@@ -26,8 +26,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse =
             new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
                               HttpStatus.UNAUTHORIZED,
-                              ErrorCode.NOT_MATCHED_AUTHENTICATION,
-                              ErrorCode.NOT_MATCHED_AUTHENTICATION.getMessage());
+                              ErrorCode.AUTHENTICATION_NOT_MATCHED,
+                              ErrorCode.AUTHENTICATION_NOT_MATCHED.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 

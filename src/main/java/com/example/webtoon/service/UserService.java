@@ -3,7 +3,7 @@ package com.example.webtoon.service;
 import com.example.webtoon.entity.User;
 import com.example.webtoon.exception.CustomException;
 import com.example.webtoon.type.ErrorCode;
-import com.example.webtoon.payload.UserInfo;
+import com.example.webtoon.dto.UserInfo;
 import com.example.webtoon.repository.UserRepository;
 import com.example.webtoon.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class UserService {
     public UserInfo getUserInfo(String nickname) {
         User user = userRepository.findByNickname(nickname)
             .orElseThrow(() -> new CustomException(
-                HttpStatus.BAD_REQUEST, ErrorCode.NO_MATCHED_NICKNAME));
+                HttpStatus.BAD_REQUEST, ErrorCode.NICKNAME_NOT_FOUND));
 
         return new UserInfo(user.getEmail(),
                             user.getUsername(),

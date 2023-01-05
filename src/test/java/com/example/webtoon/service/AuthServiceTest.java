@@ -1,10 +1,10 @@
 package com.example.webtoon.service;
 
-import static com.example.webtoon.entity.RoleName.ROLE_USER;
 import static com.example.webtoon.type.ErrorCode.ALREADY_EXISTED_EMAIL;
 import static com.example.webtoon.type.ErrorCode.ALREADY_EXISTED_NICKNAME;
-import static com.example.webtoon.type.ErrorCode.LOGIN_FAIL_NO_EMAIL_EXIST;
+import static com.example.webtoon.type.ErrorCode.LOGIN_FAIL_EMAIL_NOT_EXIST;
 import static com.example.webtoon.type.ErrorCode.LOGIN_FAIL_PASSWORD_WRONG;
+import static com.example.webtoon.type.RoleName.ROLE_USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,10 +15,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+import com.example.webtoon.dto.LoginRequest;
+import com.example.webtoon.dto.SignUpRequest;
 import com.example.webtoon.entity.User;
 import com.example.webtoon.exception.CustomException;
-import com.example.webtoon.payload.LoginRequest;
-import com.example.webtoon.payload.SignUpRequest;
 import com.example.webtoon.repository.UserRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -89,7 +89,7 @@ class AuthServiceTest {
 
         // then
         assertEquals(BAD_REQUEST, exception.getStatusMessage());
-        assertEquals(LOGIN_FAIL_NO_EMAIL_EXIST, exception.getErrorCode());
+        assertEquals(LOGIN_FAIL_EMAIL_NOT_EXIST, exception.getErrorCode());
     }
 
     @Test

@@ -1,9 +1,9 @@
 package com.example.webtoon.controller;
 
 
-import com.example.webtoon.payload.ApiResponse;
+import com.example.webtoon.dto.ApiResponse;
 import com.example.webtoon.type.ResponseCode;
-import com.example.webtoon.payload.UserInfo;
+import com.example.webtoon.dto.UserInfo;
 import com.example.webtoon.security.CurrentUser;
 import com.example.webtoon.security.UserPrincipal;
 import com.example.webtoon.service.UserService;
@@ -22,7 +22,7 @@ public class UserController{
 
     private final UserService userService;
 
-    // 자기 자신 조회
+    // 본인 정보 조회
     @GetMapping("/user/my")
     public ApiResponse<?> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
         UserInfo userInfo = userService.getCurrentUser(currentUser);

@@ -1,4 +1,4 @@
-package com.example.webtoon.payload;
+package com.example.webtoon.dto;
 
 import com.example.webtoon.type.ResponseCode;
 import lombok.Getter;

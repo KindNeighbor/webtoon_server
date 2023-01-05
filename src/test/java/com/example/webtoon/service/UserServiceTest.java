@@ -1,6 +1,6 @@
 package com.example.webtoon.service;
 
-import static com.example.webtoon.entity.RoleName.ROLE_USER;
+import static com.example.webtoon.type.RoleName.ROLE_USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -9,9 +9,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+import com.example.webtoon.dto.UserInfo;
 import com.example.webtoon.entity.User;
 import com.example.webtoon.exception.CustomException;
-import com.example.webtoon.payload.UserInfo;
 import com.example.webtoon.repository.UserRepository;
 import com.example.webtoon.type.ErrorCode;
 import java.util.Optional;
@@ -73,6 +73,6 @@ class UserServiceTest {
 
         // then
         assertEquals(BAD_REQUEST, exception.getStatusMessage());
-        assertEquals(ErrorCode.NO_MATCHED_NICKNAME, exception.getErrorCode());
+        assertEquals(ErrorCode.NICKNAME_NOT_FOUND, exception.getErrorCode());
     }
 }

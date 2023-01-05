@@ -1,11 +1,11 @@
 package com.example.webtoon.controller;
 
 
-import com.example.webtoon.payload.ApiResponse;
-import com.example.webtoon.payload.JwtAuthenticationResponse;
-import com.example.webtoon.payload.LoginRequest;
+import com.example.webtoon.dto.ApiResponse;
+import com.example.webtoon.dto.TokenResponse;
+import com.example.webtoon.dto.LoginRequest;
 import com.example.webtoon.type.ResponseCode;
-import com.example.webtoon.payload.SignUpRequest;
+import com.example.webtoon.dto.SignUpRequest;
 import com.example.webtoon.service.AuthService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class AuthController {
 
         String jwt = authService.signIn(loginRequest);
         return new ApiResponse<>(
-            HttpStatus.OK, ResponseCode.LOGIN_SUCCESS, new JwtAuthenticationResponse(jwt));
+            HttpStatus.OK, ResponseCode.LOGIN_SUCCESS, new TokenResponse(jwt));
     }
 
     // 회원가입
