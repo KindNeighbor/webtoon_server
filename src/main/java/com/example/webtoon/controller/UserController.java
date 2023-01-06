@@ -3,7 +3,7 @@ package com.example.webtoon.controller;
 
 import com.example.webtoon.dto.ApiResponse;
 import com.example.webtoon.type.ResponseCode;
-import com.example.webtoon.dto.UserInfo;
+import com.example.webtoon.dto.UserDto;
 import com.example.webtoon.security.CurrentUser;
 import com.example.webtoon.security.UserPrincipal;
 import com.example.webtoon.service.UserService;
@@ -25,17 +25,18 @@ public class UserController{
     // 본인 정보 조회
     @GetMapping("/user/my")
     public ApiResponse<?> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
-        UserInfo userInfo = userService.getCurrentUser(currentUser);
+        UserDto userDto = userService.getCurrentUser(currentUser);
         return new ApiResponse<>(
-            HttpStatus.OK, ResponseCode.GET_MY_INFO_SUCCESS, userInfo);
+            HttpStatus.OK, ResponseCode.GET_MY_INFO_SUCCESS, userDto);
     }
 
-    // 회원조회(관리자)
-    @GetMapping("/user/{nickname}")
+
     @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/user/{nickname}")
     public ApiResponse<?> getUserProfile(@PathVariable(value = "nickname") String nickname) {
-        UserInfo userInfo = userService.getUserInfo(nickname);
+        UserDto userDto = userService.getUserInfo(nickname);
         return new ApiResponse<>(
-            HttpStatus.OK, ResponseCode.GET_USER_INFO_SUCCESS, userInfo);
+            HttpStatus.OK, ResponseCode.GET_USER_INFO_SUCCESS, userDto);
     }
+    // 회원조회(관리자)
 }

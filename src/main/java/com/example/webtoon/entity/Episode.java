@@ -1,5 +1,7 @@
 package com.example.webtoon.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,4 +38,14 @@ public class Episode extends DateEntity {
         cascade = CascadeType.ALL,
         mappedBy = "episode")
     private EpisodeThumbnail episodeThumbnail;
+
+    @OneToMany(fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        mappedBy = "episode")
+    private List<Rate> rates = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY,
+        cascade = CascadeType.ALL,
+        mappedBy = "episode")
+    private List<Comment> comments = new ArrayList<>();
 }

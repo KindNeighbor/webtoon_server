@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.webtoon.config.SecurityConfig;
-import com.example.webtoon.dto.UserInfo;
+import com.example.webtoon.dto.UserDto;
 import com.example.webtoon.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,13 +40,13 @@ class UserControllerTest {
     @DisplayName("본인 정보 조회 성공")
     void getMyInfoSuccess() throws Exception {
         // given
-        UserInfo userInfo = UserInfo.builder()
+        UserDto userDto = UserDto.builder()
             .email("test@test.com")
             .username("testUsername")
             .nickname("testNickname")
             .build();
 
-        given(userService.getCurrentUser(any())).willReturn(userInfo);
+        given(userService.getCurrentUser(any())).willReturn(userDto);
 
         // when
         // then
@@ -68,13 +68,13 @@ class UserControllerTest {
     @DisplayName("회원 정보 조회 성공")
     void getUserInfoSuccess() throws Exception {
         // given
-        UserInfo userInfo = UserInfo.builder()
+        UserDto userDto = UserDto.builder()
             .email("test@test.com")
             .username("testUsername")
             .nickname("testNickname")
             .build();
 
-        given(userService.getUserInfo(anyString())).willReturn(userInfo);
+        given(userService.getUserInfo(anyString())).willReturn(userDto);
 
         // when
         // then

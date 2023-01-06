@@ -9,7 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-import com.example.webtoon.dto.UserInfo;
+import com.example.webtoon.dto.UserDto;
 import com.example.webtoon.entity.User;
 import com.example.webtoon.exception.CustomException;
 import com.example.webtoon.repository.UserRepository;
@@ -53,11 +53,11 @@ class UserServiceTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
         // when
-        UserInfo userInfo = userService.getUserInfo("testNickName");
+        UserDto userDto = userService.getUserInfo("testNickName");
 
         // then
         verify(userRepository, times(1)).findByNickname(captor.capture());
-        assertEquals(userInfo.getNickname(), captor.getValue());
+        assertEquals(userDto.getNickname(), captor.getValue());
     }
 
     @Test
