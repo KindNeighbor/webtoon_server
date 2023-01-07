@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -26,6 +28,7 @@ public class Webtoon extends DateEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long webtoonId;
 
+    @Column(unique = true)
     private String title;
 
     private String artist;
@@ -36,6 +39,7 @@ public class Webtoon extends DateEntity {
 
     @OneToOne(fetch = FetchType.LAZY,
               cascade = CascadeType.ALL,
+              orphanRemoval = true,
               mappedBy = "webtoon")
     private WebtoonThumbnail webtoonThumbnail;
 

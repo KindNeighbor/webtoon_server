@@ -1,9 +1,7 @@
 package com.example.webtoon.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,6 +17,7 @@ import lombok.Setter;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Embeddable
 public class WebtoonThumbnail extends DateEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

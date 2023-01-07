@@ -31,6 +31,7 @@ public class UserController{
     }
 
 
+    // 회원조회(관리자)
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/user/{nickname}")
     public ApiResponse<?> getUserProfile(@PathVariable(value = "nickname") String nickname) {
@@ -38,5 +39,4 @@ public class UserController{
         return new ApiResponse<>(
             HttpStatus.OK, ResponseCode.GET_USER_INFO_SUCCESS, userDto);
     }
-    // 회원조회(관리자)
 }

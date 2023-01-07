@@ -12,6 +12,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  servlet:
+    multipart:
+      location: /data/upload_tmp
+
 
 jwt:
   header: Authorization

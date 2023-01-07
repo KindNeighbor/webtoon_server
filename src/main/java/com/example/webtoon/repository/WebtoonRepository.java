@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WebtoonRepository extends JpaRepository<Webtoon, Integer> {
 
+    Optional<Webtoon> findByWebtoonId(Long Id);
     List<Webtoon> findByDayContaining(String day);
 
     Optional<Webtoon> findByTitle(String title);
