@@ -1,6 +1,8 @@
 package com.example.webtoon;
 
 import com.example.webtoon.config.FileUploadProperties;
+import java.util.TimeZone;
+import javax.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -10,6 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 @EnableConfigurationProperties({FileUploadProperties.class})
 public class WebtoonApplication {
+
 	public static void main(String[] args) {
 		SpringApplication.run(WebtoonApplication.class, args);
 	}

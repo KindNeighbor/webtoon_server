@@ -14,6 +14,7 @@ import lombok.Setter;
 @Builder
 public class WebtoonDto {
 
+    private Long webtoonId;
     private String title;
     private String artist;
     private String day;
@@ -22,6 +23,7 @@ public class WebtoonDto {
     public static WebtoonDto from(Webtoon webtoon) {
 
         return WebtoonDto.builder()
+            .webtoonId(webtoon.getWebtoonId())
             .title(webtoon.getTitle())
             .artist(webtoon.getArtist())
             .day(webtoon.getDay())

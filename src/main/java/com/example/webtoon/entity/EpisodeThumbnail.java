@@ -1,28 +1,21 @@
 package com.example.webtoon.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.Embeddable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-public class EpisodeThumbnail extends DateEntity{
+@NoArgsConstructor
+@Embeddable
+public class EpisodeThumbnail {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long etId;
+    private String thFileName;
+    private String thFileUri;
 
-    private String fileName;
-
-    private String fileUri;
-
-    @OneToOne
-    @JoinColumn(name = "episode_id")
-    private Episode episode;
+    public EpisodeThumbnail(String thFileName, String thFileUri) {
+        this.thFileName = thFileName;
+        this.thFileUri = thFileUri;
+    }
 }

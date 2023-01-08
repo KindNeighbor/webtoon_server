@@ -1,12 +1,11 @@
 package com.example.webtoon.service;
 
 import com.example.webtoon.config.FileUploadProperties;
-import com.example.webtoon.dto.WebtoonThumbnailDto;
-import com.example.webtoon.entity.Webtoon;
+import com.example.webtoon.entity.EpisodeFile;
+import com.example.webtoon.entity.EpisodeThumbnail;
 import com.example.webtoon.entity.WebtoonThumbnail;
 import com.example.webtoon.exception.CustomException;
 import com.example.webtoon.repository.WebtoonRepository;
-import com.example.webtoon.repository.WebtoonThumbnailRepository;
 import com.example.webtoon.type.ErrorCode;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,14 +26,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class FileService {
 
     private final WebtoonRepository webtoonRepository;
-    private final WebtoonThumbnailRepository webtoonThumbnailRepository;
     private final Path dirLocation;
 
     public FileService(WebtoonRepository webtoonRepository,
-                       WebtoonThumbnailRepository webtoonThumbnailRepository,
                        FileUploadProperties fileUploadProperties) {
         this.webtoonRepository = webtoonRepository;
-        this.webtoonThumbnailRepository = webtoonThumbnailRepository;
         this.dirLocation = Paths.get(fileUploadProperties.getLocation())
             .toAbsolutePath().normalize();
     }
@@ -84,8 +80,8 @@ public class FileService {
 //            .build();
 //    }
 
-    //파일 저장
-    public WebtoonThumbnail saveThumbnail(MultipartFile file) {
+    // 웹툰 썸네일 파일 저장
+    public WebtoonThumbnail saveWebtoonThumbnailFile(MultipartFile file) {
 
         //파일 이름(fileName)
         String fileName = StringUtils.cleanPath(
@@ -117,6 +113,72 @@ public class FileService {
         }
 
         return new WebtoonThumbnail(fileName, fileUri);
+    }
+
+    // 에피소드 이미지 파일 저장
+    public EpisodeFile saveEpisodeFile(MultipartFile file) {
+
+        //파일 이름(fileName)
+        String fileName = StringUtils.cleanPath(
+            Objects.requireNonNull(file.getOriginalFilename()));
+
+        //파일 경로(FileUri)
+        String fileUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/webtoons/")
+            .path(fileName)
+            .toUriString();
+
+        InputStream inputStream = null;
+
+        try {
+            inputStream = file.getInputStream();
+
+            Path targetLocation = this.dirLocation.resolve(fileName);
+
+            Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+        } catch (IOException e) {
+            throw new CustomException(
+                HttpStatus.BAD_REQUEST, ErrorCode.FILE_STORAGE_FAILED);
+
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        return new EpisodeFile(fileName, fileUri);
+    }
+
+    // 에피소드 썸네일 파일 저장
+    public EpisodeThumbnail saveEpisodeThumbnailFile(MultipartFile file) {
+
+        //파일 이름(fileName)
+        String fileName = StringUtils.cleanPath(
+            Objects.requireNonNull(file.getOriginalFilename()));
+
+        //파일 경로(FileUri)
+        String fileUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/webtoons/")
+            .path(fileName)
+            .toUriString();
+
+        InputStream inputStream = null;
+
+        try {
+            inputStream = file.getInputStream();
+
+            Path targetLocation = this.dirLocation.resolve(fileName);
+
+            Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+        } catch (IOException e) {
+            throw new CustomException(
+                HttpStatus.BAD_REQUEST, ErrorCode.FILE_STORAGE_FAILED);
+
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+
+        return new EpisodeThumbnail(fileName, fileUri);
     }
 }
 

@@ -21,7 +21,7 @@ public class Rate extends DateEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rateId;
 
-    private Integer rate;
+    private Integer userRate;
 
     @ManyToOne
     @JoinColumn(name = "episode_id")
@@ -30,4 +30,8 @@ public class Rate extends DateEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Rate(Integer userRate) {
+        this.userRate = userRate;
+    }
 }

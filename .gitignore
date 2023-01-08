@@ -320,4 +320,6 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+src/main/resources/static/webtoons
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,intellij+all,intellij+iml,java,gradle
