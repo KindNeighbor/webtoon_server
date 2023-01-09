@@ -24,15 +24,14 @@ public class JwtTokenProvider { //Jwt 토큰 생성 및 유효성 검증 컴포�
     @Value("${jwt.token-validity-in-seconds}") //유효기간
     private int jwtExpirationInMs;
 
-    private final int jwtExpirationInSecond = jwtExpirationInMs * 1000;
-
     //Jwt 토큰 생성
     public String generateToken(Authentication authentication) {
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInSecond); //만기 날짜
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs); //만기 날짜
+        System.out.println("expiryDate = " + expiryDate);
 
         return Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getId())) //데이터
