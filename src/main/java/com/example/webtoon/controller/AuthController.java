@@ -24,7 +24,7 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/signin")
-    public ApiResponse<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ApiResponse<TokenResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         String jwt = authService.signIn(loginRequest);
         return new ApiResponse<>(
@@ -33,7 +33,7 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ApiResponse<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ApiResponse<SignUpRequest> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 
         authService.signUp(signUpRequest);
         return new ApiResponse<>(

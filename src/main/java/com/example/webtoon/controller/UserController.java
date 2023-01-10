@@ -24,7 +24,7 @@ public class UserController{
 
     // 본인 정보 조회
     @GetMapping("/user/my")
-    public ApiResponse<?> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
+    public ApiResponse<UserDto> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
         UserDto userDto = userService.getCurrentUser(currentUser);
         return new ApiResponse<>(
             HttpStatus.OK, ResponseCode.GET_MY_INFO_SUCCESS, userDto);
@@ -34,7 +34,7 @@ public class UserController{
     // 회원조회(관리자)
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/user/{nickname}")
-    public ApiResponse<?> getUserProfile(@PathVariable(value = "nickname") String nickname) {
+    public ApiResponse<UserDto> getUserProfile(@PathVariable(value = "nickname") String nickname) {
         UserDto userDto = userService.getUserInfo(nickname);
         return new ApiResponse<>(
             HttpStatus.OK, ResponseCode.GET_USER_INFO_SUCCESS, userDto);

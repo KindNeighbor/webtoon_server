@@ -5,6 +5,7 @@ import com.example.webtoon.dto.EpisodeDto;
 import com.example.webtoon.dto.WebtoonDto;
 import com.example.webtoon.service.WebtoonService;
 import com.example.webtoon.type.ResponseCode;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,12 +29,12 @@ public class WebtoonController {
 
     // 신규 웹툰 등록
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping("/add-webtoon")
-    public ApiResponse<?> addWebtoon(@RequestParam String title,
+    @PostMapping("/webtoon")
+    public ApiResponse<WebtoonDto> addWebtoon(@RequestParam String title,
                                      @RequestParam String artist,
                                      @RequestParam String day,
                                      @RequestParam String genre,
-                                     @RequestParam MultipartFile file) {
+                                     @RequestParam MultipartFile file) throws IOException {
 
         WebtoonDto webtoonDto = webtoonService.addWebtoon(title, artist, day, genre, file);
         return new ApiResponse<>(
@@ -42,11 +43,11 @@ public class WebtoonController {
 
     // 웹툰 수정
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping("/update-webtoon/{webtoonId}")
-    public ApiResponse<?> updateWebtoon(@PathVariable Long webtoonId,
+    @PutMapping("/webtoon/{webtoonId}")
+    public ApiResponse<WebtoonDto> updateWebtoon(@PathVariable Long webtoonId,
                                         @RequestParam String title, @RequestParam String artist,
                                         @RequestParam String day, @RequestParam String genre,
-                                        @RequestParam MultipartFile file) {
+                                        @RequestParam MultipartFile file) throws IOException {
 
         WebtoonDto webtoonDto =
             webtoonService.updateWebtoon(webtoonId, title, artist, day, genre,file);
@@ -56,16 +57,16 @@ public class WebtoonController {
 
     // 기존 웹툰 삭제
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/delete-webtoon/{webtoonId}")
-    public ApiResponse<?> deleteWebtoon(@PathVariable Long webtoonId) {
+    @DeleteMapping("/webtoon/{webtoonId}")
+    public ApiResponse<Void> deleteWebtoon(@PathVariable Long webtoonId) {
         webtoonService.deleteWebtoon(webtoonId);
         return new ApiResponse<>(HttpStatus.OK, ResponseCode.DELETE_WEBTOON_SUCCESS);
     }
 
     // 에피소드 등록
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping("/add-episode/{webtoonId}")
-    public ApiResponse<?> addWebtoon(@PathVariable Long webtoonId,
+    @PostMapping("/episode/{webtoonId}")
+    public ApiResponse<EpisodeDto> addWebtoon(@PathVariable Long webtoonId,
                                      @RequestParam String title,
                                      @RequestParam MultipartFile epFile,
                                      @RequestParam MultipartFile thFile) {
@@ -78,8 +79,8 @@ public class WebtoonController {
 
     // 에피소드 수정
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping("/update-episode/{episodeId}")
-    public ApiResponse<?> updateWebtoon(@PathVariable Long episodeId,
+    @PutMapping("/episode/{episodeId}")
+    public ApiResponse<EpisodeDto> updateWebtoon(@PathVariable Long episodeId,
                                         @RequestParam String title,
                                         @RequestParam MultipartFile epFile,
                                         @RequestParam MultipartFile thFile) {
@@ -92,23 +93,23 @@ public class WebtoonController {
 
     // 기존 에피소드 삭제
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/delete-episode/{episodeId}")
-    public ApiResponse<?> deleteEpisode(@PathVariable Long episodeId) {
+    @DeleteMapping("/episode/{episodeId}")
+    public ApiResponse<Void> deleteEpisode(@PathVariable Long episodeId) {
         webtoonService.deleteEpisode(episodeId);
         return new ApiResponse<>(HttpStatus.OK, ResponseCode.DELETE_EPISODE_SUCCESS);
     }
 
     // 웹툰 에피소드 조회
-    @GetMapping("/get-webtoon/episodes/{webtoonId}")
-    public ApiResponse<?> getWebtoonEpisodes(@PathVariable Long webtoonId) {
+    @GetMapping("/webtoon/episodes/{webtoonId}")
+    public ApiResponse<List<EpisodeDto>> getWebtoonEpisodes(@PathVariable Long webtoonId) {
         List<EpisodeDto> episodeDtoList = webtoonService.getWebtoonEpisodes(webtoonId);
         return new ApiResponse<>(
             HttpStatus.OK, ResponseCode.GET_EPISODES_SUCCESS, episodeDtoList);
     }
 
     // 요일로 웹툰 조회
-    @GetMapping("/get-webtoon/day")
-    public ApiResponse<?> getWebtoonByDay(@RequestParam String day) {
+    @GetMapping("/webtoon/day")
+    public ApiResponse<List<WebtoonDto>> getWebtoonByDay(@RequestParam String day) {
         List<WebtoonDto> webtoonByDay = webtoonService.getWebtoonByDay(day);
         return new ApiResponse<>(
             HttpStatus.OK, ResponseCode.GET_WEBTOON_BY_DAY_SUCCESS, webtoonByDay);

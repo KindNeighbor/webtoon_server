@@ -35,53 +35,9 @@ public class FileService {
             .toAbsolutePath().normalize();
     }
 
-    // 웹툰 썸네일 등록
-//    public WebtoonThumbnailDto addWebtoonThumbnail(String title, MultipartFile file) {
-//
-//        // 제목으로 웹툰 불러옴
-//        Webtoon webtoon = webtoonRepository.findByTitle(title).orElseThrow(
-//            () -> new CustomException(HttpStatus.NOT_FOUND, ErrorCode.WEBTOON_TITLE_NOT_FOUND));
-//
-//        // 썸네일 유무 확인
-//        if (webtoon.getWebtoonThumbnail() != null) {
-//            throw new CustomException(
-//                HttpStatus.CONFLICT, ErrorCode.ALREADY_EXISTED_WEBTOON_THUMBNAIL);
-//        }
-//
-//        WebtoonThumbnail webtoonThumbnail = saveThumbnail(file);
-//        webtoonThumbnail.setWebtoon(webtoon);
-//        webtoon.setWebtoonThumbnail(webtoonThumbnail);
-//        webtoonRepository.save(webtoon);
-//
-//        return WebtoonThumbnailDto.builder()
-//            .fileName(webtoonThumbnail.getFileName())
-//            .fileUri(webtoonThumbnail.getFileUri())
-//            .build();
-//    }
-
-    // 웹툰 썸네일 수정
-//    public WebtoonThumbnailDto updateWebtoonThumbnail(Long id, MultipartFile file) {
-//
-//        WebtoonThumbnail savedFile = saveThumbnail(file);
-//
-//        // 연결된 웹툰 썸네일
-//        WebtoonThumbnail thumbnail = webtoonThumbnailRepository.findByWebtoon_WebtoonId(id)
-//            .orElseThrow(() -> new CustomException(
-//                HttpStatus.NOT_FOUND, ErrorCode.WEBTOON_THUMBNAIL_NOT_FOUND));
-//
-//        thumbnail.setFileName(savedFile.getFileName());
-//        thumbnail.setFileUri(savedFile.getFileUri());
-//
-//        webtoonThumbnailRepository.save(thumbnail);
-//
-//        return WebtoonThumbnailDto.builder()
-//            .fileName(thumbnail.getFileName())
-//            .fileUri(thumbnail.getFileUri())
-//            .build();
-//    }
 
     // 웹툰 썸네일 파일 저장
-    public WebtoonThumbnail saveWebtoonThumbnailFile(MultipartFile file) {
+    public WebtoonThumbnail saveWebtoonThumbnailFile(MultipartFile file) throws IOException {
 
         //파일 이름(fileName)
         String fileName = StringUtils.cleanPath(
@@ -93,26 +49,15 @@ public class FileService {
             .path(fileName)
             .toUriString();
 
-        InputStream inputStream = null;
-
-        try {
-            inputStream = file.getInputStream();
+        try (InputStream inputStream = file.getInputStream()) {
 
             Path targetLocation = this.dirLocation.resolve(fileName);
 
             // 이름이 같으면 그위에 덮어씀
             Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-        } catch (IOException e) {
-            throw new CustomException(
-                HttpStatus.BAD_REQUEST, ErrorCode.FILE_STORAGE_FAILED);
-
-        } finally {
-            // InputStream 닫지 않으면 tmp 파일이 지워지지 않아서 UncheckedException 발생
-            IOUtils.closeQuietly(inputStream);
+            return new WebtoonThumbnail(fileName, fileUri);
         }
-
-        return new WebtoonThumbnail(fileName, fileUri);
     }
 
     // 에피소드 이미지 파일 저장
