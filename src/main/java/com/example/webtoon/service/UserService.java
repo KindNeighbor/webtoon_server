@@ -47,6 +47,7 @@ public class UserService {
         return webtoonList.stream().map(WebtoonIdListDto::from).collect(Collectors.toList());
     }
 
+    // 선호 작품 목록 조회
     public List<WebtoonIdListDto> getFavWebtoonList(Long userId) {
         List<Webtoon> webtoonList = webtoonRepository.findAllByUserID(userId);
         return webtoonList.stream().map(WebtoonIdListDto::from).collect(Collectors.toList());

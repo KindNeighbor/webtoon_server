@@ -13,6 +13,4 @@ public interface FavRepository extends JpaRepository<Favorite, Long> {
     boolean existsByWebtoon_WebtoonIdAndUser_UserId(Long webtoonId, Long userId);
 
     void deleteByWebtoon_WebtoonIdAndUser_UserId(Long webtoonId, Long userId);
-
-    List<Favorite> findAllByUser_UserId(Long userId);
 }

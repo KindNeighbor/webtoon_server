@@ -18,7 +18,7 @@ public interface WebtoonRepository extends JpaRepository<Webtoon, Long> {
     @Query(value="Select avg(user_rate) from test_webtoon.rate "
         + "JOIN test_webtoon.episode e on e.episode_id = rate.episode_id "
         + "where webtoon_id = ?1", nativeQuery = true)
-    Double getAvgRate(Long id);
+    Double getAvgRate(Long webtoonId);
 
     @Query(value = "SELECT DISTINCT * FROM test_webtoon.webtoon "
         + "LEFT JOIN test_webtoon.episode e on webtoon.webtoon_id = e.webtoon_id "

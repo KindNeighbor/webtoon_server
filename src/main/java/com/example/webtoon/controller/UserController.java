@@ -35,7 +35,7 @@ public class UserController{
 
     // 회원조회(관리자)
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping("/user/{nickname}")
+    @GetMapping("/admin/user/{nickname}")
     public ApiResponse<UserDto> getUserProfile(@PathVariable(value = "nickname") String nickname) {
         UserDto userDto = userService.getUserInfo(nickname);
         return new ApiResponse<>(
