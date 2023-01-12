@@ -14,8 +14,6 @@ import com.example.webtoon.type.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 @RequiredArgsConstructor
@@ -61,13 +59,21 @@ public class RateService {
         return RateDto.from(rate);
     }
 
+    // 평점 삭제
+    public void deleteRate(Long episodeId, Long userId) {
+        if (!rateRepository.existsByEpisode_EpisodeIdAndUser_UserId(episodeId, userId)) {
+            throw new CustomException(HttpStatus.NOT_FOUND, ErrorCode.RATE_NOT_FOUND);
+        }
+        rateRepository.deleteByEpisode_EpisodeIdAndUser_UserId(episodeId, userId);
+    }
+
     // 웹툰 평점 평균 불러오기
-    public RateAvgDto getWebtoonAvgRate(@PathVariable Long webtoonId){
+    public RateAvgDto getWebtoonAvgRate(Long webtoonId){
         return new RateAvgDto(webtoonRepository.getAvgRate(webtoonId));
     }
 
     // 에피소드 평점 평균 불러오기
-    public RateAvgDto getWebtoonEpisodeAvgRate(@PathVariable Long episodeId){
-        return new RateAvgDto(rateRepository.getAvgRate(episodeId));
+    public RateAvgDto getWebtoonEpisodeAvgRate(Long episodeId){
+        return new RateAvgDto(episodeRepository.getAvgRate(episodeId));
     }
 }

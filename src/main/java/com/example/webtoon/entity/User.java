@@ -53,12 +53,12 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,
         mappedBy = "user")
-    private List<Favorite> favorites = new ArrayList<>();;
+    private List<Favorite> favorites = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,
         mappedBy = "user")
-    private List<Comment> comments = new ArrayList<>();;
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,

@@ -41,11 +41,6 @@ public class Episode extends DateEntity {
     @OneToMany(fetch = FetchType.LAZY,
         cascade = CascadeType.ALL,
         mappedBy = "episode")
-    private List<Rate> rates = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL,
-        mappedBy = "episode")
     private List<Comment> comments = new ArrayList<>();
 
     public Episode(String title) {

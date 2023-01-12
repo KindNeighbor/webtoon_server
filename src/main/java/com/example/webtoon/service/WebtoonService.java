@@ -32,7 +32,7 @@ public class WebtoonService {
 
         if (webtoonRepository.existsByTitle(title)) {
             throw new CustomException(
-                HttpStatus.CONFLICT, ErrorCode.ALREADY_EXISTED_WEBTOON_TITLE);
+                HttpStatus.CONFLICT, ErrorCode.ALREADY_EXIST_WEBTOON_TITLE);
         }
 
         Webtoon webtoon = new Webtoon(title, artist, day, genre);
@@ -66,6 +66,9 @@ public class WebtoonService {
 
     // 웹툰 삭제
     public void deleteWebtoon(Long webtoonId) {
+        if (!webtoonRepository.existsById(webtoonId)) {
+            throw new CustomException(HttpStatus.NOT_FOUND, ErrorCode.WEBTOON_NOT_FOUND);
+        }
         webtoonRepository.deleteById(webtoonId);
     }
 
@@ -73,11 +76,11 @@ public class WebtoonService {
     public EpisodeDto addEpisode(Long webtoonId,
                                  String title,
                                  MultipartFile epFile,
-                                 MultipartFile thFile) {
+                                 MultipartFile thFile) throws IOException {
 
         if (episodeRepository.existsByWebtoon_WebtoonIdAndTitle(webtoonId, title)) {
             throw new CustomException(
-                HttpStatus.CONFLICT, ErrorCode.ALREADY_EXISTED_EPISODE_TITLE);
+                HttpStatus.CONFLICT, ErrorCode.ALREADY_EXIST_EPISODE_TITLE);
         }
 
         Webtoon webtoon = webtoonRepository.findById(webtoonId).orElseThrow(
@@ -95,7 +98,7 @@ public class WebtoonService {
     public EpisodeDto updateEpisode(Long episodeId,
                                     String title,
                                     MultipartFile epFile,
-                                    MultipartFile thFile) {
+                                    MultipartFile thFile) throws IOException {
 
         Episode episode = episodeRepository.findById(episodeId).orElseThrow(
             () -> new CustomException(HttpStatus.NOT_FOUND, ErrorCode.EPISODE_NOT_FOUND));
@@ -110,6 +113,9 @@ public class WebtoonService {
 
     // 에피소드 삭제
     public void deleteEpisode(Long episodeId) {
+        if (!episodeRepository.existsById(episodeId)) {
+            throw new CustomException(HttpStatus.NOT_FOUND, ErrorCode.EPISODE_NOT_FOUND);
+        }
         episodeRepository.deleteById(episodeId);
     }
 
@@ -119,6 +125,7 @@ public class WebtoonService {
         return webtoonList.stream().map(WebtoonDto::from).collect(Collectors.toList());
     }
 
+    // 웹툰별 에피소드 목록 조회
     public List<EpisodeDto> getWebtoonEpisodes(Long webtoonId) {
         List<Episode> episodeList = episodeRepository.findByWebtoon_WebtoonId(webtoonId);
         return episodeList.stream().map(EpisodeDto::from).collect(Collectors.toList());

@@ -40,7 +40,6 @@ public class Webtoon extends DateEntity {
 
     @OneToMany(fetch = FetchType.LAZY,
                cascade = CascadeType.ALL,
-               orphanRemoval = true,
                mappedBy = "webtoon")
     private List<Episode> episodes = new ArrayList<>();
 

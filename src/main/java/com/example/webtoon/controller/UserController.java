@@ -2,11 +2,13 @@ package com.example.webtoon.controller;
 
 
 import com.example.webtoon.dto.ApiResponse;
+import com.example.webtoon.dto.WebtoonIdListDto;
 import com.example.webtoon.type.ResponseCode;
 import com.example.webtoon.dto.UserDto;
 import com.example.webtoon.security.CurrentUser;
 import com.example.webtoon.security.UserPrincipal;
 import com.example.webtoon.service.UserService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,5 +40,20 @@ public class UserController{
         UserDto userDto = userService.getUserInfo(nickname);
         return new ApiResponse<>(
             HttpStatus.OK, ResponseCode.GET_USER_INFO_SUCCESS, userDto);
+    }
+
+    // 유저가 평점 부여한 웹툰 목록 조회 (webtoonId 로 반환)
+    @GetMapping("/user/webtoon/rated")
+    public ApiResponse<List<WebtoonIdListDto>> getWebtoonRatedByUser(@CurrentUser UserPrincipal currentUser) {
+        List<WebtoonIdListDto> webtoonList = userService.getWebtoonRatedByUser(currentUser.getId());
+        return new ApiResponse<>(
+            HttpStatus.OK, ResponseCode.GET_RATED_WEBTOON_LIST_SUCCESS, webtoonList);
+    }
+
+    // 선호 작품 목록 조회
+    @GetMapping("/user/fav-webtoon")
+    public ApiResponse<List<WebtoonIdListDto>> getFavWebtoonList(@CurrentUser UserPrincipal currentUser) {
+        List<WebtoonIdListDto> favWebtoonList = userService.getFavWebtoonList(currentUser.getId());
+        return new ApiResponse<>(HttpStatus.OK, ResponseCode.GET_FAV_WEBTOON_LIST_SUCCESS, favWebtoonList);
     }
 }

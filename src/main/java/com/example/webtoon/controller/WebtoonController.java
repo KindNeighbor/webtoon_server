@@ -69,7 +69,7 @@ public class WebtoonController {
     public ApiResponse<EpisodeDto> addWebtoon(@PathVariable Long webtoonId,
                                      @RequestParam String title,
                                      @RequestParam MultipartFile epFile,
-                                     @RequestParam MultipartFile thFile) {
+                                     @RequestParam MultipartFile thFile) throws IOException {
 
         EpisodeDto EpisodeDto =
             webtoonService.addEpisode(webtoonId, title, epFile, thFile);
@@ -83,7 +83,7 @@ public class WebtoonController {
     public ApiResponse<EpisodeDto> updateWebtoon(@PathVariable Long episodeId,
                                         @RequestParam String title,
                                         @RequestParam MultipartFile epFile,
-                                        @RequestParam MultipartFile thFile) {
+                                        @RequestParam MultipartFile thFile) throws IOException {
 
         EpisodeDto EpisodeDto =
             webtoonService.updateEpisode(episodeId, title, epFile, thFile);
