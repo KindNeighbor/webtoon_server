@@ -12,12 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    @Query(value = "SELECT * FROM test_webtoon.comment where episode_id = ?1", nativeQuery = true)
-    List<Comment> findAllByEpisodeId(Long episodeId);
+    List<Comment> findAllByEpisode_EpisodeId(Long episodeId);
 
     Optional<Comment> findByCommentIdAndUser_UserId(Long commentId, Long userId);
 
     boolean existsByCommentIdAndUser_UserId(Long episodeId, Long userId);
 
     void deleteByCommentIdAndUser_UserId(Long episodeId, Long userId);
+
+    List<Comment> findAllByUser_UserId(Long userId);
 }
