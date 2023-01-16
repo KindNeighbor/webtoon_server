@@ -3,11 +3,14 @@ package com.example.webtoon.controller;
 import com.example.webtoon.dto.ApiResponse;
 import com.example.webtoon.dto.EpisodeDto;
 import com.example.webtoon.dto.WebtoonDto;
+import com.example.webtoon.security.CurrentUser;
+import com.example.webtoon.security.UserPrincipal;
 import com.example.webtoon.service.WebtoonService;
 import com.example.webtoon.type.ResponseCode;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -102,16 +106,31 @@ public class WebtoonController {
     // 웹툰 에피소드 조회
     @GetMapping("/webtoon/episodes/{webtoonId}")
     public ApiResponse<List<EpisodeDto>> getWebtoonEpisodes(@PathVariable Long webtoonId) {
-        List<EpisodeDto> episodeDtoList = webtoonService.getWebtoonEpisodes(webtoonId);
+        List<EpisodeDto> episodeDtoList =
+            webtoonService.getWebtoonEpisodes(webtoonId);
         return new ApiResponse<>(
             HttpStatus.OK, ResponseCode.GET_EPISODES_SUCCESS, episodeDtoList);
     }
 
     // 요일로 웹툰 조회
-    @GetMapping("/webtoon/day")
-    public ApiResponse<List<WebtoonDto>> getWebtoonByDay(@RequestParam String day) {
-        List<WebtoonDto> webtoonByDay = webtoonService.getWebtoonByDay(day);
+//    @GetMapping("/webtoon/day")
+//    public ApiResponse<List<WebtoonDto>> getWebtoonByDay(@RequestParam String day) {
+//        List<WebtoonDto> webtoonByDay = webtoonService.getWebtoonByDay(day);
+//        return new ApiResponse<>(
+//            HttpStatus.OK, ResponseCode.GET_WEBTOON_BY_DAY_SUCCESS, webtoonByDay);
+//    }
+
+    // 응답 메세지 고치시오 (싫음 말고)
+    @GetMapping("/webtoon")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<Page<WebtoonDto>> getWebtoonByDay(
+        @RequestParam(defaultValue = "월요일") String day,
+        @RequestParam(defaultValue = "new") String orderType,
+        @RequestParam(defaultValue = "0") Integer page) {
+
+        Page<WebtoonDto> webtoonList = webtoonService.getWebtoonByDay(day, orderType, page);
+
         return new ApiResponse<>(
-            HttpStatus.OK, ResponseCode.GET_WEBTOON_BY_DAY_SUCCESS, webtoonByDay);
+            HttpStatus.OK, ResponseCode.GET_WEBTOON_BY_DAY_SUCCESS, webtoonList);
     }
 }

@@ -9,10 +9,17 @@ import com.example.webtoon.exception.CustomException;
 import com.example.webtoon.repository.EpisodeRepository;
 import com.example.webtoon.repository.WebtoonRepository;
 import com.example.webtoon.type.ErrorCode;
+import com.example.webtoon.type.SortType;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class WebtoonService {
+
+    private final int SIZE = 10;
 
     private final WebtoonRepository webtoonRepository;
     private final EpisodeRepository episodeRepository;
@@ -120,14 +129,38 @@ public class WebtoonService {
     }
 
     // 요일로 웹툰 조회
-    public List<WebtoonDto> getWebtoonByDay(String day) {
-        List<Webtoon> webtoonList = webtoonRepository.findByDayContaining(day);
-        return webtoonList.stream().map(WebtoonDto::from).collect(Collectors.toList());
-    }
+//    public List<WebtoonDto> getWebtoonByDay(String day) {
+//        List<Webtoon> webtoonList = webtoonRepository.findByDayContaining(day);
+//        return webtoonList.stream().map(WebtoonDto::from).collect(Collectors.toList());
+//    }
 
     // 웹툰별 에피소드 목록 조회
     public List<EpisodeDto> getWebtoonEpisodes(Long webtoonId) {
-        List<Episode> episodeList = episodeRepository.findByWebtoon_WebtoonId(webtoonId);
+        List<Episode> episodeList = episodeRepository.findByWebtoonWebtoonId(webtoonId);
+        Webtoon webtoon = webtoonRepository.findById(webtoonId).orElseThrow();
+        webtoon.setCount(webtoon.getCount() + 1);
+        webtoonRepository.save(webtoon);
         return episodeList.stream().map(EpisodeDto::from).collect(Collectors.toList());
     }
+    // 에러코드 고치시오
+    public Page<WebtoonDto> getWebtoonByDay(String day, String orderType, Integer page) {
+
+        if (!webtoonRepository.existsByDayContaining(day)) {
+            throw new CustomException(HttpStatus.NOT_FOUND, ErrorCode.WEBTOON_NOT_FOUND);
+        }
+
+        Optional<SortType> optionalOrder = Arrays.stream(SortType.values()).filter(
+            it -> it.getType().equals(orderType)).findFirst();
+
+        if (optionalOrder.isEmpty()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, ErrorCode.ORDER_TYPE_NOT_FOUND);
+        }
+
+        Sort sort = SortType.getSort(optionalOrder.get());
+        Pageable pageable = PageRequest.of(page, SIZE, sort);
+        Page<Webtoon> webtoons = webtoonRepository.findByDay(day, pageable);
+
+        return webtoons.map(WebtoonDto::from);
+    }
+
 }

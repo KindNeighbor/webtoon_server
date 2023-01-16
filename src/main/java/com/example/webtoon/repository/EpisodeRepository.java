@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EpisodeRepository extends JpaRepository<Episode, Long> {
 
-    List<Episode> findByWebtoon_WebtoonId(Long webtoonId);
+    List<Episode> findByWebtoonWebtoonId(Long webtoonId);
 
     Boolean existsByWebtoon_WebtoonIdAndTitle(Long webtoonId, String title);
 

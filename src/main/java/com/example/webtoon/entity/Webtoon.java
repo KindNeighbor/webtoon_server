@@ -35,6 +35,8 @@ public class Webtoon extends DateEntity {
 
     private String genre;
 
+    private Long count;
+
     @Embedded
     private WebtoonThumbnail webtoonThumbnail;
 

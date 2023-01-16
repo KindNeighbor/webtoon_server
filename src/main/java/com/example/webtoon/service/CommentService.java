@@ -54,7 +54,7 @@ public class CommentService {
 
     // 댓글 삭제
     public void deleteComment(Long commentId, Long userId) {
-        if (!commentRepository.existsByCommentIdAndUser_UserId(commentId, userId)) {
+        if (!commentRepository.existsByCommentIdAndUserUserId(commentId, userId)) {
             throw new CustomException(HttpStatus.NOT_FOUND, ErrorCode.COMMENT_NOT_FOUND);
         }
         commentRepository.deleteByCommentIdAndUser_UserId(commentId, userId);
