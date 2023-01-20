@@ -1,6 +1,7 @@
 package com.example.webtoon.service;
 
 import com.example.webtoon.dto.EpisodeDto;
+import com.example.webtoon.dto.WebtoonDocument;
 import com.example.webtoon.dto.WebtoonDto;
 import com.example.webtoon.entity.Episode;
 import com.example.webtoon.entity.Webtoon;
@@ -8,6 +9,7 @@ import com.example.webtoon.entity.WebtoonThumbnail;
 import com.example.webtoon.exception.CustomException;
 import com.example.webtoon.repository.EpisodeRepository;
 import com.example.webtoon.repository.WebtoonRepository;
+import com.example.webtoon.repository.WebtoonSearchRepository;
 import com.example.webtoon.type.ErrorCode;
 import com.example.webtoon.type.SortType;
 import java.io.IOException;
@@ -32,6 +34,7 @@ public class WebtoonService {
 
     private final WebtoonRepository webtoonRepository;
     private final EpisodeRepository episodeRepository;
+    private final WebtoonSearchRepository webtoonSearchRepository;
     private final FileService fileService;
 
     // 웹툰 신규 등록
@@ -48,6 +51,8 @@ public class WebtoonService {
         WebtoonThumbnail thumbnail = fileService.saveWebtoonThumbnailFile(file);
         webtoon.setWebtoonThumbnail(thumbnail);
         webtoonRepository.save(webtoon);
+        WebtoonDocument webtoonDocument = WebtoonDocument.from(webtoon);
+        webtoonSearchRepository.save(webtoonDocument);
 
         return WebtoonDto.from(webtoon);
     }
@@ -137,7 +142,8 @@ public class WebtoonService {
     // 웹툰별 에피소드 목록 조회
     public List<EpisodeDto> getWebtoonEpisodes(Long webtoonId) {
         List<Episode> episodeList = episodeRepository.findByWebtoonWebtoonId(webtoonId);
-        Webtoon webtoon = webtoonRepository.findById(webtoonId).orElseThrow();
+        Webtoon webtoon = webtoonRepository.findById(webtoonId).orElseThrow(
+            () -> new CustomException(HttpStatus.NOT_FOUND, ErrorCode.WEBTOON_NOT_FOUND));
         webtoon.setCount(webtoon.getCount() + 1);
         webtoonRepository.save(webtoon);
         return episodeList.stream().map(EpisodeDto::from).collect(Collectors.toList());
@@ -163,4 +169,10 @@ public class WebtoonService {
         return webtoons.map(WebtoonDto::from);
     }
 
+    public Page<WebtoonDto> searchWebtoons(String keyword, Integer page) {
+        Pageable pageable = PageRequest.of(page, SIZE);
+        Page<WebtoonDocument> webtoons =
+            webtoonSearchRepository.findByTitleOrArtistOrGenre(keyword, keyword, keyword, pageable);
+        return webtoons.map(WebtoonDto::fromDocument);
+    }
 }

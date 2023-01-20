@@ -33,4 +33,14 @@ public class WebtoonDto {
             .genre(webtoon.getGenre())
             .build();
     }
+
+    public static WebtoonDto fromDocument(WebtoonDocument webtoonDocument) {
+
+        return WebtoonDto.builder()
+            .webtoonId(webtoonDocument.getId())
+            .title(webtoonDocument.getTitle())
+            .artist(webtoonDocument.getArtist())
+            .genre(webtoonDocument.getGenre())
+            .build();
+    }
 }
